@@ -204,6 +204,7 @@ func (p *DB) randHeight() (h int) {
 	for h < tMaxHeight && p.rnd.Int()%branching == 0 {
 		h++
 	}
+	h = 6
 	return
 }
 
@@ -469,7 +470,7 @@ func (p *DB) Reset() {
 func New(cmp comparer.BasicComparer, capacity int) *DB {
 	p := &DB{
 		cmp:       cmp,
-		rnd:       rand.New(rand.NewSource(0xdeadbeef)),
+		rnd:       rand.New(rand.NewSource(0xdeadbeef)), // magic number. NewSource 非多gorountine安全
 		maxHeight: 1,
 		kvData:    make([]byte, 0, capacity),
 		nodeData:  make([]int, 4+tMaxHeight),

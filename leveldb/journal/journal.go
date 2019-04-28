@@ -312,7 +312,7 @@ func (x *singleReader) Read(p []byte) (int, error) {
 	return n, nil
 }
 
-func (x *singleReader) ReadByte() (byte, error) {
+func (x *singleReader) ReadByte() (byte, error) { // 根上面 Read 代码类似
 	r := x.r
 	if r.seq != x.seq {
 		return 0, errors.New("leveldb/journal: stale reader")

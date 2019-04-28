@@ -146,8 +146,8 @@ func openDB(s *session) (*DB, error) {
 		db.SetReadOnly()
 	} else {
 		db.closeW.Add(2)
-		go db.tCompaction()
-		go db.mCompaction()
+		go db.tCompaction() // major compaction，就是合并不同层级的level文件。
+		go db.mCompaction() // minor compaction，就是把memory的内容写入到level 0的文件
 		// go db.jWriter()
 	}
 
@@ -763,7 +763,7 @@ func (db *DB) get(auxm *memdb.DB, auxt tFiles, key []byte, seq uint64, ro *opt.R
 		}
 	}
 
-	em, fm := db.getMems()
+	em, fm := db.getMems() //拿到memdb和frozon memdb依次查找<
 	for _, m := range [...]*memDB{em, fm} {
 		if m == nil {
 			continue
@@ -775,7 +775,7 @@ func (db *DB) get(auxm *memdb.DB, auxt tFiles, key []byte, seq uint64, ro *opt.R
 		}
 	}
 
-	v := db.s.version()
+	v := db.s.version() // 拿到version后从version中各个level的文件中依次查找<
 	value, cSched, err := v.get(auxt, ikey, ro, false)
 	v.release()
 	if cSched {

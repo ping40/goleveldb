@@ -9,9 +9,11 @@ package testutil
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"math/rand"
 	"reflect"
 	"sync"
+	"time"
 
 	"github.com/onsi/ginkgo/config"
 
@@ -24,6 +26,7 @@ var (
 )
 
 func Defer(args ...interface{}) bool {
+	fmt.Println("in Defer ", time.Now())
 	var (
 		group string
 		fn    func()
@@ -40,9 +43,12 @@ func Defer(args ...interface{}) bool {
 	}
 	if fn != nil {
 		runmu.Lock()
+
 		runfn[group] = append(runfn[group], fn)
 		runmu.Unlock()
 	}
+
+	fmt.Println("in Defer ", group , len(runfn))
 	return true
 }
 
@@ -50,6 +56,9 @@ func RunDefer(groups ...string) bool {
 	if len(groups) == 0 {
 		groups = append(groups, "")
 	}
+
+	fmt.Println("in RunDefer ", groups, time.Now())
+
 	runmu.Lock()
 	var runfn_ []func()
 	for _, group := range groups {

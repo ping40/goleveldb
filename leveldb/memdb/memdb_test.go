@@ -89,47 +89,5 @@ var _ = testutil.Defer(func() {
 			})
 		})
 
-		Describe("read test", func() {
-			testutil.AllKeyValueTesting(nil, func(kv testutil.KeyValue) testutil.DB {
-				// Building the DB.
-				db := New(comparer.DefaultComparer, 0)
-				kv.IterateShuffled(nil, func(i int, key, value []byte) {
-					db.Put(key, value)
-				})
-
-				if kv.Len() > 1 {
-					It("Should find correct keys with findLT", func() {
-						testutil.ShuffledIndex(nil, kv.Len()-1, 1, func(i int) {
-							key_, key, _ := kv.IndexInexact(i + 1)
-							expectedKey, expectedValue := kv.Index(i)
-
-							// Using key that exist.
-							rkey, rvalue, err := db.TestFindLT(key)
-							Expect(err).ShouldNot(HaveOccurred(), "Error for key %q -> %q", key, expectedKey)
-							Expect(rkey).Should(Equal(expectedKey), "Key")
-							Expect(rvalue).Should(Equal(expectedValue), "Value for key %q -> %q", key, expectedKey)
-
-							// Using key that doesn't exist.
-							rkey, rvalue, err = db.TestFindLT(key_)
-							Expect(err).ShouldNot(HaveOccurred(), "Error for key %q (%q) -> %q", key_, key, expectedKey)
-							Expect(rkey).Should(Equal(expectedKey))
-							Expect(rvalue).Should(Equal(expectedValue), "Value for key %q (%q) -> %q", key_, key, expectedKey)
-						})
-					})
-				}
-
-				if kv.Len() > 0 {
-					It("Should find last key with findLast", func() {
-						key, value := kv.Index(kv.Len() - 1)
-						rkey, rvalue, err := db.TestFindLast()
-						Expect(err).ShouldNot(HaveOccurred())
-						Expect(rkey).Should(Equal(key))
-						Expect(rvalue).Should(Equal(value))
-					})
-				}
-
-				return db
-			}, nil, nil)
-		})
 	})
 })
