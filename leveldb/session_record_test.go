@@ -8,6 +8,7 @@ package leveldb
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 )
 
@@ -59,4 +60,28 @@ func TestSessionRecord_EncodeDecode(t *testing.T) {
 	v.setNextFileNum(big + 200)
 	v.setSeqNum(uint64(big + 1000))
 	test()
+}
+
+func TestMakeInternalKey(t *testing.T) {
+
+	dst := makeInternalKey(nil, []byte("f"), 1, keyTypeVal)
+	dst2 := makeInternalKey(nil, []byte("f"), 256, keyTypeVal)
+	dst3 := makeInternalKey(nil, []byte("f"), 257, keyTypeVal)
+
+	fmt.Printf(" \n  dst:")
+	for _, b := range dst {
+		fmt.Printf(" %02x", b)
+	}
+	fmt.Printf(" \n dst2:")
+	for _, b := range dst2 {
+		fmt.Printf(" %02x", b)
+	}
+	fmt.Printf(" \n dst3:")
+	for _, b := range dst3 {
+		fmt.Printf(" %02x", b)
+	}
+
+	b1 := bytes.Compare(dst, dst2)
+	b2 := bytes.Compare(dst, dst3)
+	fmt.Printf(" \n b1: %v, b2: %v ", b1, b2)
 }

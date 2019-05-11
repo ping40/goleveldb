@@ -19,12 +19,14 @@ type lruNode struct {
 	next, prev *lruNode
 }
 
-func (n *lruNode) insert(at *lruNode) {
+func (n *lruNode) insert(at *lruNode) { // 注意 n中的 prev, next 都是 nil
+
 	x := at.next
 	at.next = n
 	n.prev = at
 	n.next = x
 	x.prev = n
+
 }
 
 func (n *lruNode) remove() {
@@ -45,7 +47,7 @@ type lru struct {
 	recent   lruNode
 }
 
-func (r *lru) reset() {
+func (r *lru) reset() { // 指向自己
 	r.recent.next = &r.recent
 	r.recent.prev = &r.recent
 	r.used = 0

@@ -801,7 +801,7 @@ func (db *DB) tCompaction() {
 		if db.tableNeedCompaction() {
 			select {
 			case x = <-db.tcompCmdC:
-			case ch := <-db.tcompPauseC:
+			case ch := <-db.tcompPauseC: // 一种设计模式，接受消息，停止工作，然后等待继续开始
 				db.pauseCompaction(ch)
 				continue
 			case <-db.closeC:

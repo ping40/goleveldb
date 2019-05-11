@@ -4,22 +4,13 @@ import "fmt"
 
 func main() {
 
-	var x int
+	k := make([]byte, 10, 20)
+	for i := 0; i < 10; i++ {
+		k[i] = byte(i)
+	}
 
-	defer func() {
-		if x := kkrecover(); x > 0 {
-			fmt.Println("123")
-		}
+	copy(k, k[5:])
+	fmt.Printf("haha :  %v, %v, \n", len(k), cap(k))
 
-		fmt.Printf("x2: %d \n", x)
-		if x != 0 {
-			fmt.Println("1234")
-		}
-		fmt.Println("123 5")
-	}()
-	fmt.Println(22)
-}
-
-func kkrecover() int {
-	return 8
+	fmt.Printf("haha %v  \n", k)
 }

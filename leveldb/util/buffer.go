@@ -12,12 +12,15 @@ import (
 	"io"
 )
 
+// over 20190430
 // A Buffer is a variable-sized buffer of bytes with Read and Write methods.
 // The zero value for Buffer is an empty buffer ready to use.
 type Buffer struct {
-	buf       []byte   // contents are the bytes buf[off : len(buf)]
-	off       int      // read at &buf[off], write at &buf[len(buf)]
+	buf []byte // contents are the bytes buf[off : len(buf)]
+	off int    // read at &buf[off], write at &buf[len(buf)]
+	// 备用存储
 	bootstrap [64]byte // memory to hold first slice; helps small buffers (Printf) avoid allocation.
+
 }
 
 // Bytes returns a slice of the contents of the unread portion of the buffer;
@@ -60,7 +63,7 @@ func (b *Buffer) Reset() { b.Truncate(0) }
 // grow grows the buffer to guarantee space for n more bytes.
 // It returns the index where bytes should be written.
 // If the buffer can't grow it will panic with bytes.ErrTooLarge.
-func (b *Buffer) grow(n int) int {
+func (b *Buffer) grow(n int) int { // 感觉有问题,测试没有问题
 	m := b.Len()
 	// If buffer is empty, reset to recover space.
 	if m == 0 && b.off != 0 {

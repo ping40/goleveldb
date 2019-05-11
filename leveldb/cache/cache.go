@@ -15,6 +15,8 @@ import (
 	"github.com/syndtr/goleveldb/leveldb/util"
 )
 
+// over 20190510
+// 除了利用哈希表来存储数据以外，leveldb还利用LRU来管理数据。
 // Cacher provides interface to implements a caching functionality.
 // An implementation must be safe for concurrent use.
 type Cacher interface {
@@ -239,12 +241,12 @@ func (n *mNode) initBucket(i uint32) *mBucket {
 			// Grow.
 			pb := (*mBucket)(atomic.LoadPointer(&p.buckets[i&p.mask]))
 			if pb == nil {
-				pb = p.initBucket(i & p.mask)
+				pb = p.initBucket(i & p.mask) // 执行条件是： pred --> pred ? 为什么只有两个，没有三个？ 明白了。第归操作
 			}
 			m := pb.freeze()
 			// Split nodes.
 			for _, x := range m {
-				if x.hash&n.mask == i {
+				if x.hash&n.mask == i { // 这里是位操作， 由于是扩张下，所以原来的bucket 会分布到 多个新的bucket里面
 					node = append(node, x)
 				}
 			}
@@ -266,7 +268,7 @@ func (n *mNode) initBucket(i uint32) *mBucket {
 			node = append(node, m1...)
 		}
 		b := &mBucket{node: node}
-		if atomic.CompareAndSwapPointer(&n.buckets[i], nil, unsafe.Pointer(b)) {
+		if atomic.CompareAndSwapPointer(&n.buckets[i], nil, unsafe.Pointer(b)) { // 如果有多个goroutine进入，也只有一个数据进入到这里
 			if len(node) > mOverflowThreshold {
 				atomic.AddInt32(&n.overflow, int32(len(node)-mOverflowThreshold))
 			}
@@ -287,10 +289,10 @@ func (n *mNode) initBuckets() {
 // Cache is a 'cache map'.
 type Cache struct {
 	mu     sync.RWMutex
-	mHead  unsafe.Pointer // *mNode
+	mHead  unsafe.Pointer // *mNode  存储数据
 	nodes  int32
 	size   int32
-	cacher Cacher
+	cacher Cacher // lru 算法 管理 数据的 入口
 	closed bool
 }
 
@@ -658,7 +660,7 @@ func (h *Handle) Release() {
 	}
 }
 
-func murmur32(ns, key uint64, seed uint32) uint32 {
+func murmur32(ns, key uint64, seed uint32) uint32 { //与其它流行的哈希函数相比，对于规律性较强的key，MurmurHash的随机分布特征表现更良好。
 	const (
 		m = uint32(0x5bd1e995)
 		r = 24

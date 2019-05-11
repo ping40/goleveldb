@@ -8,8 +8,9 @@ package filter
 
 import (
 	"encoding/binary"
-	"github.com/syndtr/goleveldb/leveldb/util"
 	"testing"
+
+	"github.com/syndtr/goleveldb/leveldb/util"
 )
 
 type harness struct {
@@ -21,7 +22,7 @@ type harness struct {
 }
 
 func newHarness(t *testing.T) *harness {
-	bloom := NewBloomFilter(10)
+	bloom := NewBloomFilter(100)
 	return &harness{
 		t:         t,
 		bloom:     bloom,
@@ -78,6 +79,17 @@ func TestBloomFilter_Small(t *testing.T) {
 	h := newHarness(t)
 	h.add([]byte("hello"))
 	h.add([]byte("world"))
+	h.add([]byte("world1"))
+	h.add([]byte("world22"))
+	h.add([]byte("world223"))
+	h.add([]byte("world224"))
+	h.add([]byte("world225"))
+	h.add([]byte("world226"))
+	h.add([]byte("world227"))
+	h.add([]byte("world228"))
+	h.add([]byte("world229"))
+	h.add([]byte("world230"))
+	h.add([]byte("world231"))
 	h.build()
 	h.assert([]byte("hello"), true, false)
 	h.assert([]byte("world"), true, false)
@@ -102,7 +114,7 @@ func nextN(n int) int {
 func TestBloomFilter_VaryingLengths(t *testing.T) {
 	h := newHarness(t)
 	var mediocre, good int
-	for n := 1; n < 10000; n = nextN(n) {
+	for n := 1; n < 10; n = nextN(n) {
 		h.reset()
 		for i := 0; i < n; i++ {
 			h.addNum(uint32(i))

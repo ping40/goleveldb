@@ -394,6 +394,7 @@ func (t *tOps) createFrom(src iterator.Iterator) (f *tFile, n int, err error) {
 	}()
 
 	for src.Next() {
+		fmt.Printf("key: %v\n", src.Key())
 		err = w.append(src.Key(), src.Value())
 		if err != nil {
 			return
@@ -530,8 +531,8 @@ func newTableOps(s *session) *tOps {
 		s:            s,
 		noSync:       s.o.GetNoSync(),
 		evictRemoved: s.o.GetBlockCacheEvictRemoved(),
-		cache:        cache.NewCache(cacher),
-		bcache:       bcache,
+		cache:        cache.NewCache(cacher), // cache：来缓存已经被打开的sstable文件句柄以及元数据（默认上限为500个）；
+		bcache:       bcache,                 // bcache：来缓存被读过的sstable中dataBlock的数据（默认上限为8MB）;
 		bpool:        bpool,
 	}
 }

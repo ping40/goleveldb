@@ -7,6 +7,7 @@
 package cache
 
 import (
+	"fmt"
 	"math/rand"
 	"runtime"
 	"sync"
@@ -215,8 +216,14 @@ func TestLRUCache_Capacity(t *testing.T) {
 
 func TestCacheMap_NilValue(t *testing.T) {
 	c := NewCache(NewLRU(10))
+	for i := uint64(0); i < 1000; i++ {
+		fmt.Printf("\n i: %v ", i)
+		c.Get(0, i, func() (size int, value Value) {
+			return 5, i
+		})
+	}
 	h := c.Get(0, 0, func() (size int, value Value) {
-		return 1, nil
+		return 1, 123
 	})
 	if h != nil {
 		t.Error("cache handle is non-nil")
@@ -227,6 +234,7 @@ func TestCacheMap_NilValue(t *testing.T) {
 	if c.Size() != 0 {
 		t.Errorf("invalid size counter: want=%d got=%d", 0, c.Size())
 	}
+
 }
 
 func TestLRUCache_GetLatency(t *testing.T) {

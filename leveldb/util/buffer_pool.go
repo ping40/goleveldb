@@ -13,6 +13,7 @@ import (
 	"time"
 )
 
+// 使用buf 二秒钟内有效期
 type buffer struct {
 	b    []byte
 	miss int

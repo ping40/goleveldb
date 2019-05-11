@@ -30,17 +30,17 @@ var (
 	DefaultCompactionGPOverlapsFactor    = 10
 	DefaultCompactionL0Trigger           = 4
 	DefaultCompactionSourceLimitFactor   = 1
-	DefaultCompactionTableSize           = 2 * MiB
+	DefaultCompactionTableSize           = 20 * KiB //2 * MiB
 	DefaultCompactionTableSizeMultiplier = 1.0
-	DefaultCompactionTotalSize           = 10 * MiB
+	DefaultCompactionTotalSize           = 100 * KiB //10 * MiB
 	DefaultCompactionTotalSizeMultiplier = 10.0
 	DefaultCompressionType               = SnappyCompression
-	DefaultIteratorSamplingRate          = 1 * MiB
+	DefaultIteratorSamplingRate          = 20 * KiB //1 * MiB
 	DefaultOpenFilesCacher               = LRUCacher
 	DefaultOpenFilesCacheCapacity        = 500
 	DefaultWriteBuffer                   = 4 * MiB
-	DefaultWriteL0PauseTrigger           = 12
-	DefaultWriteL0SlowdownTrigger        = 8
+	DefaultWriteL0PauseTrigger           = 12 //当0层文件数量超过PauseTrigger时，写入暂停，直至Major Compaction完成；
+	DefaultWriteL0SlowdownTrigger        = 8  //当0层文件数量超过SlowdownTrigger时，写入的速度主要减慢；
 )
 
 // Cacher is a caching algorithm.

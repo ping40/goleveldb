@@ -40,7 +40,17 @@ type blockWriter struct {
 	scratch         []byte
 }
 
-func (w *blockWriter) append(key, value []byte) {
+/**
+一个entry分为5部分内容：
+
+    与前一条记录key共享部分的长度；
+    与前一条记录key不共享部分的长度；
+    value长度；
+    与前一条记录key非共享的内容；
+    value内容；
+
+*/
+func (w *blockWriter) append(key, value []byte) { // 明白
 	nShared := 0
 	if w.nEntries%w.restartInterval == 0 {
 		w.restarts = append(w.restarts, uint32(w.buf.Len()))
@@ -143,14 +153,14 @@ type Writer struct {
 	cmp         comparer.Comparer
 	filter      filter.Filter
 	compression opt.Compression
-	blockSize   int
+	blockSize   int // 默认是4KiB
 
-	dataBlock   blockWriter
-	indexBlock  blockWriter
-	filterBlock filterWriter
+	dataBlock   blockWriter  // data块Writer
+	indexBlock  blockWriter  // indexBlock块Writer
+	filterBlock filterWriter // filter块Writer
 	pendingBH   blockHandle
 	offset      uint64
-	nEntries    int
+	nEntries    int // key-value键值对个数
 	// Scratch allocated enough for 5 uvarint. Block writer should not use
 	// first 20-bytes since it will be used to encode block handle, which
 	// then passed to the block writer itself.
@@ -238,7 +248,7 @@ func (w *Writer) Append(key, value []byte) error {
 	if w.err != nil {
 		return w.err
 	}
-	if w.nEntries > 0 && w.cmp.Compare(w.dataBlock.prevKey, key) >= 0 {
+	if w.nEntries > 0 && w.cmp.Compare(w.dataBlock.prevKey, key) >= 0 { // 由于seq的存在，所以key可定是递增的
 		w.err = fmt.Errorf("leveldb/table: Writer: keys are not in increasing order: %q, %q", w.dataBlock.prevKey, key)
 		return w.err
 	}

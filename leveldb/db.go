@@ -148,6 +148,11 @@ func openDB(s *session) (*DB, error) {
 		db.closeW.Add(2)
 		go db.tCompaction() // major compaction，就是合并不同层级的level文件。
 		go db.mCompaction() // minor compaction，就是把memory的内容写入到level 0的文件
+		/**
+		  值得注意的是，minor compaction是一个时效性要求非常高的过程，要求其在尽可能短的时间内完成，
+		  否则就会堵塞正常的写入操作，因此minor compaction的优先级高于major compaction。当进行
+		  minor compaction的时候有major compaction正在进行，则会首先暂停major compaction。
+		*/
 		// go db.jWriter()
 	}
 
