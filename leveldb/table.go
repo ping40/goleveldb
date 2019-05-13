@@ -394,7 +394,7 @@ func (t *tOps) createFrom(src iterator.Iterator) (f *tFile, n int, err error) {
 	}()
 
 	for src.Next() {
-		fmt.Printf("key: %v\n", src.Key())
+		//	fmt.Printf("key: %v\n", src.Key())
 		err = w.append(src.Key(), src.Value())
 		if err != nil {
 			return

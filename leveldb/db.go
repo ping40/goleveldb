@@ -780,7 +780,7 @@ func (db *DB) get(auxm *memdb.DB, auxt tFiles, key []byte, seq uint64, ro *opt.R
 		}
 	}
 
-	v := db.s.version() // 拿到version后从version中各个level的文件中依次查找<
+	v := db.s.version() // 拿到version后从version中各个level的文件中依次查找
 	value, cSched, err := v.get(auxt, ikey, ro, false)
 	v.release()
 	if cSched {

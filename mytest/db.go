@@ -5,26 +5,34 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/syndtr/goleveldb/leveldb/filter"
+	"github.com/syndtr/goleveldb/leveldb/opt"
+
+	"github.com/syndtr/goleveldb/leveldb/util"
+
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
 func main() {
 
-	db, err := leveldb.OpenFile("/tmp/goleveldb", nil)
+	o := &opt.Options{
+		Filter: filter.NewBloomFilter(10),
+	}
+	db, err := leveldb.OpenFile("/home/huangping/temp/goleveldb", o)
 	if err != nil {
 		fmt.Printf("openfile err: %v", err)
 		return
 	}
-	defer db.Close()
+	//defer db.Close()
 
 	//	samplePut(db)
-	//gets(db)
+	gets(db)
 	//puts(db)
-	for i := 0; i < 100; i++ {
+	/*for i := 0; i < 50; i++ {
 		fmt.Println("batch i= ", i)
 		batches(db, time.Now().Unix())
 		time.Sleep(time.Second)
-	}
+	}*/
 
 	/*wg := sync.WaitGroup{}
 	for kk := 0; kk < 10; kk++ {
@@ -43,17 +51,24 @@ func main() {
 	fmt.Printf("before wait")
 	wg.Wait()
 	fmt.Printf("after wait")*/
-	/*if err = db.CompactRange(util.Range{}); err != nil {
+	if err = db.CompactRange(util.Range{}); err != nil {
 		fmt.Printf("CompactRange err: %v", err)
 
-	}*/
+	}
+
+	s := &leveldb.DBStats{}
+	if err := db.Stats(s); err != nil {
+		fmt.Printf("db.Stats error, %v", err)
+	} else {
+		fmt.Printf("db.Stats:%+v", s)
+	}
 }
 
 func batches(db *leveldb.DB, t int64) error {
 	batch := new(leveldb.Batch)
 
-	for i := t; i < t+50; i++ {
-		batch.Put([]byte(fmt.Sprintf("k3%d", i)), GenRandomBytes(10240))
+	for i := t; i < t+20; i++ {
+		batch.Put([]byte(fmt.Sprintf("k3%d", i)), GenRandomBytes(1023))
 	}
 	err := db.Write(batch, nil)
 	if err != nil {
@@ -71,11 +86,13 @@ func GenRandomBytes(size int) (blk []byte) {
 
 func puts(db *leveldb.DB) error {
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 2560; i++ {
+		key := make([]byte, 1)
+		key[0] = byte(i)
 		if i%100 == 0 {
 			fmt.Println("i = ", i, time.Now())
 		}
-		err := db.Put([]byte(fmt.Sprintf("m%v", i)), []byte(fmt.Sprintf("go%v", i)), nil)
+		err := db.Put(key, []byte(fmt.Sprintf("go%v", i)), nil)
 		if err != nil {
 			fmt.Printf("put err: %v", err)
 			return err
@@ -112,11 +129,11 @@ func gets(db *leveldb.DB) error {
 			}
 		}*/
 
-	if v, err := db.Get([]byte("k1-423423"), nil); err != nil {
-		fmt.Printf("get err: %v", err)
+	if v, err := db.Get([]byte("x1"), nil); err != nil {
+		fmt.Printf("\n get err: %v", err)
 		return err
 	} else {
-		fmt.Printf("gut value: %v", v)
+		fmt.Printf("\n got value: %v", v)
 	}
 
 	return nil

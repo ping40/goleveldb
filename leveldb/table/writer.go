@@ -113,6 +113,7 @@ func (w *filterWriter) flush(offset uint64) {
 	if w.generator == nil {
 		return
 	}
+	fmt.Printf("in (w *filterWriter) flush, %v, %v, %v ", offset, filterBase, len(w.offsets))
 	for x := int(offset / filterBase); x > len(w.offsets); {
 		w.generate()
 	}
@@ -123,6 +124,7 @@ func (w *filterWriter) finish() {
 		return
 	}
 	// Generate last keys.
+	fmt.Printf("in (w *filterWriter) finish, %v, ", w.nKeys)
 
 	if w.nKeys > 0 {
 		w.generate()
@@ -139,8 +141,11 @@ func (w *filterWriter) generate() {
 	// Record offset.
 	w.offsets = append(w.offsets, uint32(w.buf.Len()))
 	// Generate filters.
+	fmt.Printf("\n generate filter")
 	if w.nKeys > 0 {
+		fmt.Printf("\n  before: w.buf.Len() :%v", w.buf.Len())
 		w.generator.Generate(&w.buf)
+		fmt.Printf("\n  after: w.buf.Len() :%v", w.buf.Len())
 		w.nKeys = 0
 	}
 }

@@ -7,8 +7,8 @@ memdb  跳表
 http://blog.sina.com.cn/s/blog_72995dcc01017w1t.html
 http://jixiuf.github.io/blog/go_package.html/
 
--- 写数据的时候，是如何保证 wal  存盘的 ？
--- 真正的key 是什么 ？
+-- 写数据的时候，是如何保证 wal  存盘的 ？ fsync 保证，性能和效率的平衡
+-- 真正的key 是什么 ？  key + uint64， 自己专门的key compare
 
 ========
 数据保存格式：
@@ -28,13 +28,13 @@ https://buildmedia.readthedocs.org/media/pdf/leveldb-handbook/latest/leveldb-han
 其中internalKey的seq字段使用的便是快照对应的seq。
 通过这种方式可以过滤掉所有seq大于快照号的数据项。
 ==== 
-如果一个key，在 seq =1，16的时候写入，如果 sep = 10 读取，如何保证读取到 seq = 1 ？
-如果有seq = 10的读取，许可 compaction ？
+如果一个key，在 seq =1，16的时候写入，如果 sep = 10 读取，如何保证读取到 seq = 1 ？对比关系
+如果有seq = 10的读取，许可 compaction ？  应该不可以。
 
 ===============
 
 leveldb中使用的cache是一种LRUcache，其结构由两部分内容组成：
 
-    Hash table：用来存储数据；
-    LRU：用来维护数据项的新旧信息；
+    Hash table：用来存储数据；    --》 通过cas 避免 blocking。
+    LRU：用来维护数据项的新旧信息；  --》 关系
 

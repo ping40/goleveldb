@@ -124,6 +124,7 @@ func (v *version) walkOverlapping(aux tFiles, ikey internalKey, f func(level int
 		} else {
 			if i := tables.searchMax(v.s.icmp, ikey); i < len(tables) {
 				t := tables[i]
+				fmt.Printf("\n haha : %+v", t)
 				if v.s.icmp.uCompare(ukey, t.imin.ukey()) >= 0 {
 					if !f(level, t) {
 						return

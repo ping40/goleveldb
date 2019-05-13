@@ -30,12 +30,12 @@ var (
 	DefaultCompactionGPOverlapsFactor    = 10
 	DefaultCompactionL0Trigger           = 4
 	DefaultCompactionSourceLimitFactor   = 1
-	DefaultCompactionTableSize           = 20 * KiB //2 * MiB
+	DefaultCompactionTableSize           = 2 * MiB
 	DefaultCompactionTableSizeMultiplier = 1.0
-	DefaultCompactionTotalSize           = 100 * KiB //10 * MiB
+	DefaultCompactionTotalSize           = 10 * MiB
 	DefaultCompactionTotalSizeMultiplier = 10.0
 	DefaultCompressionType               = SnappyCompression
-	DefaultIteratorSamplingRate          = 20 * KiB //1 * MiB
+	DefaultIteratorSamplingRate          = 1 * MiB
 	DefaultOpenFilesCacher               = LRUCacher
 	DefaultOpenFilesCacheCapacity        = 500
 	DefaultWriteBuffer                   = 4 * MiB

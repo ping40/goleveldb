@@ -7,6 +7,8 @@
 package filter
 
 import (
+	"fmt"
+
 	"github.com/syndtr/goleveldb/leveldb/util"
 )
 
@@ -89,6 +91,7 @@ func (g *bloomFilterGenerator) Generate(b Buffer) {
 	nBytes := (nBits + 7) / 8
 	nBits = nBytes * 8
 
+	fmt.Printf("\n  (g *bloomFilterGenerator) Generate :  %d, %v, %v", nBytes, len(g.keyHashes), g.n)
 	dest := b.Alloc(int(nBytes) + 1)
 	dest[nBytes] = g.k
 	for _, kh := range g.keyHashes {
